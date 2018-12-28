@@ -42,7 +42,7 @@ public class Login implements HttpHandler {
                 e.printStackTrace();
             }
             if(isSession) {
-                
+
                 httpExchange.getResponseHeaders().set("Location", "welcomePage");
                 String sessionId = String.valueOf(hash(providedMail + providedPassword + LocalDateTime.now().toString()));
                 try{
