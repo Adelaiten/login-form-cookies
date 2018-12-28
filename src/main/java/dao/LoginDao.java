@@ -39,6 +39,13 @@ public class LoginDao implements LoginInterfaceDao {
     }
 
     public boolean checkIfSessionPresent(String sessionId) throws SQLException {
+        String query = "SELECT session_id from user_info WHERE session_id = ?;";
+        PreparedStatement preparedStatement = connection.prepareStatement(query);
+        preparedStatement.setString(1, sessionId);
+        ResultSet resultSet = preparedStatement.executeQuery();
+        if(resultSet.next()){
+            return true;
+        }
         return false;
     }
 }
