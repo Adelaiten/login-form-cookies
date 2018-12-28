@@ -1,6 +1,10 @@
+package handlers;
+
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import dao.LoginDao;
+import helpers.CookieHelper;
+import helpers.FormDataParser;
 import org.jtwig.JtwigModel;
 import org.jtwig.JtwigTemplate;
 
@@ -10,7 +14,6 @@ import java.net.HttpCookie;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -34,28 +37,23 @@ public class Login implements HttpHandler {
 
         if(method.equals("GET")) {
             cookie = cookieHelper.getSessionIdCookie(httpExchange);
-            String sessionId = cookie.get().getValue();
+            String sessionId = "";
+            System.out.println(sessionId);
             boolean isSession = false;
             try{
+                System.out.println("TIBIATIBIA22222");
                 isSession = loginDAO.checkIfSessionPresent(sessionId);
             }catch(SQLException e){
                 e.printStackTrace();
             }
             if(isSession) {
-
+                System.out.println("TIBIATIBIA3333");
                 httpExchange.getResponseHeaders().set("Location", "welcomePage");
-                String sessionId = String.valueOf(hash(providedMail + providedPassword + LocalDateTime.now().toString()));
-                try{
-                    loginDAO.saveSessionId(sessionId, providedMail);
-                }catch(SQLException e){
-                    e.printStackTrace();
-                }
-
                 cookie = Optional.of(new HttpCookie(CookieHelper.getSessionCookieName(), sessionId));
                 httpExchange.getResponseHeaders().add("Set-Cookie", cookie.get().toString());
-                response = redirectToWelcomePage(httpExchange, response);
             }else {
                 response = generatePage();
+
             }
 //            cookie.ifPresent(httpCookie -> loginDAO.deleteSessionId(httpCookie.getValue()));
 
@@ -63,7 +61,7 @@ public class Login implements HttpHandler {
         } else if (method.equals("POST") ) {
             response = redirectToWelcomePage(httpExchange, response);
         }
-
+        System.out.println(response + "TIBIA");
         sendResponse(httpExchange, response);
     }
 

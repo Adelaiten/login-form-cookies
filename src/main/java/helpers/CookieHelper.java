@@ -1,3 +1,5 @@
+package helpers;
+
 import com.sun.net.httpserver.HttpExchange;
 
 import java.net.HttpCookie;
@@ -33,6 +35,7 @@ public class CookieHelper {
     public Optional<HttpCookie> getSessionIdCookie(HttpExchange httpExchange){
         String cookieStr = httpExchange.getRequestHeaders().getFirst("Cookie");
         List<HttpCookie> cookies = parseCookies(cookieStr);
+
         return findCookieByName(SESSION_COOKIE_NAME, cookies);
     }
 
