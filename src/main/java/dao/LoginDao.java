@@ -1,0 +1,37 @@
+package dao;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+
+public class LoginDao implements LoginInterfaceDao {
+    private Connection connection;
+    public LoginDao(Connection connection){
+        this.connection = connection;
+    }
+    public boolean checkProvidedNameAndPass(String name, String password) throws SQLException{
+        String query = "SELECT * FROM user_info WHERE name=? AND password=?;";
+        PreparedStatement preparedStatement = connection.prepareStatement(query);
+        preparedStatement.setString(1, name);
+        preparedStatement.setString(2, password);
+        ResultSet resultSet = preparedStatement.executeQuery();
+        if(resultSet.next()){
+            return true;
+        }
+        return false;
+    }
+
+    public void saveSessionId(String sessionId, String name) throws SQLException {
+
+    }
+
+    public void deleteSessionId(String sessionId) throws SQLException {
+
+    }
+
+    public boolean checkIfSessionPresent(String sessionId) throws SQLException {
+        return false;
+    }
+}
