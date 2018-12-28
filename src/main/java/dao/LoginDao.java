@@ -1,5 +1,7 @@
 package dao;
 
+import jdk.nashorn.internal.runtime.UserAccessorProperty;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -23,6 +25,23 @@ public class LoginDao implements LoginInterfaceDao {
         return false;
     }
 
+    public User getUserFromDatabase(String sessionId) throws SQLException{
+        String query = "SELECT * FROM user_info WHERE session_id = ?;";
+        PreparedStatement preparedStatement = connection.prepareStatement(query);
+        PreparedStatement.setString(1,sessionId);
+        ResultSet resultSet = preparedStatement.executeQuery();
+        User user = new User();
+        while(resultSet.next()){
+            int id = resultSet.getInt("id");
+            String name = resultSet.getString("name");
+            String password = resultSet.getString("password");
+            user.setId(id);
+            user.setName(name);
+            user.setPassword(password);
+            user.setSessionId(sessionId);
+        }
+        return user;
+    }
     public void saveSessionId(String sessionId, String name) throws SQLException {
         String query = "UPDATE user_info SET session_id=? WHERE name=?;";
         PreparedStatement preparedStatement = connection.prepareStatement(query);
