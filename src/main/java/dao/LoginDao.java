@@ -24,7 +24,11 @@ public class LoginDao implements LoginInterfaceDao {
     }
 
     public void saveSessionId(String sessionId, String name) throws SQLException {
-
+        String query = "UPDATE user_info SET session_id=? WHERE name=?;";
+        PreparedStatement preparedStatement = connection.prepareStatement(query);
+        preparedStatement.setString(1, sessionId);
+        preparedStatement.setString(2, name);
+        preparedStatement.executeUpdate();
     }
 
     public void deleteSessionId(String sessionId) throws SQLException {
