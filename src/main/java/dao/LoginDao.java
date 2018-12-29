@@ -64,6 +64,7 @@ public class LoginDao implements LoginInterfaceDao {
         preparedStatement.setString(1, sessionId);
         ResultSet resultSet = preparedStatement.executeQuery();
         if(resultSet.next()){
+            System.out.println(resultSet.getString("session_id"));
             return true;
         }
         return false;

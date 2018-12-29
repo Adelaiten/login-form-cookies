@@ -9,7 +9,7 @@ public class Connector {
         try {
             Class.forName("org.postgresql.Driver");
             c = DriverManager
-                    .getConnection("jdbc:postgresql://localhost:5432/", dbUser, dbPassword);
+                    .getConnection("jdbc:postgresql://localhost:5432/login_form", dbUser, dbPassword);
             c.setAutoCommit(false);
             System.out.println("Opened database successfully");
         } catch (Exception e) {

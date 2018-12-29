@@ -6,7 +6,7 @@ body {
 
 #background {
     position: relative;
-    /*background-image: url("img/wolf-3818354_1920.jpg"); */
+    background-image: url("img/wolf-3818354_1920.jpg");
     filter: blur(4px);
     transform: scale(1.1);
     background-position: center;

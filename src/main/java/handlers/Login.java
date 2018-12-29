@@ -41,7 +41,6 @@ public class Login implements HttpHandler {
             if(cookie.isPresent()){
                 sessionId = cookieHelper.getSessionIdCookie(httpExchange).get().getValue().replace("\"", "");
             }
-            System.out.println(sessionId);
             boolean isSession = false;
             try{
                 isSession = loginDAO.checkIfSessionPresent(sessionId);
@@ -61,26 +60,25 @@ public class Login implements HttpHandler {
         } else if (method.equals("POST") ) {
             response = redirectToWelcomePage(httpExchange, response);
         }
-        System.out.println(response + "TIBIA");
         sendResponse(httpExchange, response);
     }
 
     private String redirectToWelcomePage(HttpExchange httpExchange, String response) throws IOException {
         Map inputs = formDataParser.getData(httpExchange);
-        String providedMail = inputs.get("email").toString();
+        String providedName = inputs.get("name").toString();
         String providedPassword = inputs.get("pass").toString();
         boolean loginData = false;
         try{
-            loginData = loginDAO.checkProvidedNameAndPass(providedMail, providedPassword);
+            loginData = loginDAO.checkProvidedNameAndPass(providedName, providedPassword);
         }catch(SQLException e){
             e.printStackTrace();
         }
 
         if (loginData) {
             httpExchange.getResponseHeaders().set("Location", "welcomePage");
-            String sessionId = String.valueOf(hash(providedMail + providedPassword + LocalDateTime.now().toString()));
+            String sessionId = String.valueOf(hash(providedName + providedPassword + LocalDateTime.now().toString()));
             try{
-                loginDAO.saveSessionId(sessionId, providedMail);
+                loginDAO.saveSessionId(sessionId, providedName);
             }catch(SQLException e){
                 e.printStackTrace();
             }

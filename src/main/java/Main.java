@@ -16,9 +16,9 @@ public class Main {
 
         // set routes
          server.createContext("/login", new Login(connection));
-         server.createContext("/welcomepage", new WelcomePage(connection));
+         server.createContext("/welcomePage", new WelcomePage(connection));
          server.createContext("/static", new Static());
-        server.setExecutor(null); // creates a default executor
+         server.setExecutor(null); // creates a default executor
 
         // start listening
         server.start();
