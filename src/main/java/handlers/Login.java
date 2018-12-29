@@ -37,17 +37,18 @@ public class Login implements HttpHandler {
 
         if(method.equals("GET")) {
             cookie = cookieHelper.getSessionIdCookie(httpExchange);
-            String sessionId = "";
+            String sessionId= "";
+            if(cookie.isPresent()){
+                sessionId = cookieHelper.getSessionIdCookie(httpExchange).get().getValue().replace("\"", "");
+            }
             System.out.println(sessionId);
             boolean isSession = false;
             try{
-                System.out.println("TIBIATIBIA22222");
                 isSession = loginDAO.checkIfSessionPresent(sessionId);
             }catch(SQLException e){
                 e.printStackTrace();
             }
             if(isSession) {
-                System.out.println("TIBIATIBIA3333");
                 httpExchange.getResponseHeaders().set("Location", "welcomePage");
                 cookie = Optional.of(new HttpCookie(CookieHelper.getSessionCookieName(), sessionId));
                 httpExchange.getResponseHeaders().add("Set-Cookie", cookie.get().toString());
@@ -55,7 +56,6 @@ public class Login implements HttpHandler {
                 response = generatePage();
 
             }
-//            cookie.ifPresent(httpCookie -> loginDAO.deleteSessionId(httpCookie.getValue()));
 
 
         } else if (method.equals("POST") ) {

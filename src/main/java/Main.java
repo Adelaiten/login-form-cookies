@@ -1,5 +1,7 @@
+
 import com.sun.net.httpserver.HttpServer;
 import handlers.Login;
+import handlers.WelcomePage;
 
 import java.net.InetSocketAddress;
 import java.sql.Connection;
@@ -14,6 +16,7 @@ public class Main {
 
         // set routes
          server.createContext("/login", new Login(connection));
+         server.createContext("/welcomepage", new WelcomePage(connection));
          server.createContext("/static", new Static());
         server.setExecutor(null); // creates a default executor
 
