@@ -20,7 +20,6 @@ public class WelcomePage implements HttpHandler {
     private CookieHelper cookieHelper;
     private LoginDao loginDAO;
     private FormDataParser formDataParser;
-    private Optional<HttpCookie> cookie;
     public WelcomePage(Connection connection){
         this.loginDAO = new LoginDao(connection);
         formDataParser = new FormDataParser();

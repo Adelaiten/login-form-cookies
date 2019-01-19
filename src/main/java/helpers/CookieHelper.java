@@ -10,7 +10,7 @@ import java.util.Optional;
 public class CookieHelper {
     private static final String SESSION_COOKIE_NAME = "sessionId";
 
-    public List<HttpCookie> parseCookies(String cookieString){
+    private List<HttpCookie> parseCookies(String cookieString){
         List<HttpCookie> cookies = new ArrayList<>();
         if(cookieString == null || cookieString.isEmpty()){ // what happens if cookieString = null?
             return cookies;
@@ -24,7 +24,7 @@ public class CookieHelper {
         return cookies;
     }
 
-    public Optional<HttpCookie> findCookieByName(String name, List<HttpCookie> cookies){
+    private Optional<HttpCookie> findCookieByName(String name, List<HttpCookie> cookies){
         for(HttpCookie cookie : cookies){
             if(cookie.getName().equals(name))
                 return Optional.ofNullable(cookie);
