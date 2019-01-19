@@ -1,5 +1,6 @@
 package handlers;
 
+import Exceptions.DatabaseException;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import dao.LoginDao;
@@ -8,6 +9,7 @@ import helpers.FormDataParser;
 import org.jtwig.JtwigModel;
 import org.jtwig.JtwigTemplate;
 
+import javax.xml.crypto.Data;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.HttpCookie;
@@ -23,54 +25,70 @@ public class Login implements HttpHandler {
     private FormDataParser formDataParser;
     private Optional<HttpCookie> cookie;
 
+
     public Login(Connection connection) {
         this.loginDAO = new LoginDao(connection);
         formDataParser = new FormDataParser();
         cookieHelper = new CookieHelper();
     }
 
+
     @Override
     public void handle(HttpExchange httpExchange) throws IOException {
         String response = "";
         String method = httpExchange.getRequestMethod();
 
-
         if(method.equals("GET")) {
             cookie = cookieHelper.getSessionIdCookie(httpExchange);
             String sessionId= "";
-            if(cookie.isPresent()){
-                sessionId = cookieHelper.getSessionIdCookie(httpExchange).get().getValue().replace("\"", "");
-            }
             boolean isSession = false;
-            try{
-                isSession = loginDAO.checkIfSessionPresent(sessionId);
-            }catch(SQLException e){
-                e.printStackTrace();
+
+            if (cookie.isPresent()) {
+                sessionId = getSessionId(httpExchange);
+                isSession = checkIfSessionExist(sessionId, isSession);
             }
+
             if(isSession) {
-                httpExchange.getResponseHeaders().set("Location", "welcomePage");
-                cookie = Optional.of(new HttpCookie(CookieHelper.getSessionCookieName(), sessionId));
-                httpExchange.getResponseHeaders().add("Set-Cookie", cookie.get().toString());
+                redirectToWelcomePageIfSessionPresent(httpExchange, sessionId);
             }else {
                 response = generatePage();
 
             }
-
-
         } else if (method.equals("POST") ) {
-            response = redirectToWelcomePage(httpExchange, response);
+            response = loginToWelcomePage(httpExchange, response);
         }
+
         sendResponse(httpExchange, response);
     }
 
-    private String redirectToWelcomePage(HttpExchange httpExchange, String response) throws IOException {
+    private void redirectToWelcomePageIfSessionPresent(HttpExchange httpExchange, String sessionId) {
+        httpExchange.getResponseHeaders().set("Location", "welcomePage");
+        cookie = Optional.of(new HttpCookie(CookieHelper.getSessionCookieName(), sessionId));
+        httpExchange.getResponseHeaders().add("Set-Cookie", cookie.get().toString());
+    }
+
+    private boolean checkIfSessionExist(String sessionId, boolean isSession) {
+        try {
+            isSession = loginDAO.checkIfSessionPresent(sessionId);
+        } catch(DatabaseException e) {
+            e.printStackTrace();
+        }
+        return isSession;
+    }
+
+    private String getSessionId(HttpExchange httpExchange) {
+        return cookieHelper.getSessionIdCookie(httpExchange).get().getValue().replace("\"", "");
+    }
+
+
+    private String loginToWelcomePage(HttpExchange httpExchange, String response) throws IOException {
         Map inputs = formDataParser.getData(httpExchange);
         String providedName = inputs.get("name").toString();
         String providedPassword = inputs.get("pass").toString();
         boolean loginData = false;
         try{
             loginData = loginDAO.checkProvidedNameAndPass(providedName, providedPassword);
-        }catch(SQLException e){
+        }catch(DatabaseException e){
             e.printStackTrace();
         }
 
@@ -79,7 +97,7 @@ public class Login implements HttpHandler {
             String sessionId = String.valueOf(hash(providedName + providedPassword + LocalDateTime.now().toString()));
             try{
                 loginDAO.saveSessionId(sessionId, providedName);
-            }catch(SQLException e){
+            }catch(DatabaseException e){
                 e.printStackTrace();
             }
 
@@ -90,11 +108,6 @@ public class Login implements HttpHandler {
         }
         return response;
     }
-
-    /**
-     * Form data is sent as a urlencoded string. Thus we have to parse this string to get data that we want.
-     * See: https://en.wikipedia.org/wiki/POST_(HTTP)
-     */
 
 
     private void sendResponse(HttpExchange httpExchange, String response) throws IOException {
@@ -116,13 +129,10 @@ public class Login implements HttpHandler {
         return h;
     }
 
+
     private String generatePage(){
-
         JtwigTemplate template = JtwigTemplate.classpathTemplate("html/index.twig");
-
-
         JtwigModel model = JtwigModel.newModel();
-
 
         return template.render(model);
     }
