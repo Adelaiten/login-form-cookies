@@ -2,9 +2,9 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 
 
-public class Connector {
+class Connector {
 
-    public Connection connect(String dbUser, String dbPassword) {
+     Connection connect(String dbUser, String dbPassword) {
         Connection c = null;
         try {
             Class.forName("org.postgresql.Driver");
