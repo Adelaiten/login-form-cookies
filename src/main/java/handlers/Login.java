@@ -39,26 +39,31 @@ public class Login implements HttpHandler {
         String method = httpExchange.getRequestMethod();
 
         if(method.equals("GET")) {
-            cookie = cookieHelper.getSessionIdCookie(httpExchange);
-            String sessionId= "";
-            boolean isSession = false;
-
-            if (cookie.isPresent()) {
-                sessionId = getSessionId(httpExchange);
-                isSession = checkIfSessionExist(sessionId, isSession);
-            }
-
-            if(isSession) {
-                redirectToWelcomePageIfSessionPresent(httpExchange, sessionId);
-            }else {
-                response = generatePage();
-
-            }
+            response = handleGetMethod(httpExchange, response);
         } else if (method.equals("POST") ) {
             response = loginToWelcomePage(httpExchange, response);
         }
 
         sendResponse(httpExchange, response);
+    }
+
+    private String handleGetMethod(HttpExchange httpExchange, String response) {
+        cookie = cookieHelper.getSessionIdCookie(httpExchange);
+        String sessionId= "";
+        boolean isSession = false;
+
+        if (cookie.isPresent()) {
+            sessionId = getSessionId(httpExchange);
+            isSession = checkIfSessionExist(sessionId, isSession);
+        }
+
+        if(isSession) {
+            redirectToWelcomePageIfSessionPresent(httpExchange, sessionId);
+        }else {
+            response = generatePage();
+
+        }
+        return response;
     }
 
     private void redirectToWelcomePageIfSessionPresent(HttpExchange httpExchange, String sessionId) {
