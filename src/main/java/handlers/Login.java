@@ -9,12 +9,10 @@ import helpers.FormDataParser;
 import org.jtwig.JtwigModel;
 import org.jtwig.JtwigTemplate;
 
-import javax.xml.crypto.Data;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.HttpCookie;
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Optional;
